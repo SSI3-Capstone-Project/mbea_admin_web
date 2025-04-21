@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import MainLayout from '../Layouts/MainLayouts.vue'
+import MainLayout from '../layouts/MainLayouts.vue'
 import BrandLists from '../components/Brands/BrandLists.vue'
 import Collections from '../components/Collections/CollectionLists.vue'
 import SubCollections from '../components/SubCollections/SubCollectionLists.vue'
