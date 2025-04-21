@@ -1,7 +1,8 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuth } from '@/composables/useAuth'
+import { useAuth } from '../../composable/Auth/useAuth'
+
 
 const email = ref('')
 const password = ref('')
@@ -12,7 +13,7 @@ const { login, isLoading, error } = useAuth()
 const handleSubmit = async () => {
   const success = await login({ email: email.value, password: password.value })
   if (success) {
-    router.push('/') // เปลี่ยนไปหน้า dashboard หรือหน้าแรก
+    router.push('/reports') // เปลี่ยนไปหน้า dashboard หรือหน้าแรก
   }
 }
 </script>
@@ -20,7 +21,7 @@ const handleSubmit = async () => {
 <template>
   <div class="min-h-screen flex items-center justify-center bg-gray-100 px-4">
     <div class="w-full max-w-md bg-white p-8 rounded-2xl shadow-xl">
-      <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Login to MBEA Admin</h2>
+      <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">MBEA ADMIN</h2>
       <form @submit.prevent="handleSubmit" class="space-y-5">
         <div>
           <label class="block text-sm font-medium text-gray-600 mb-1">Email</label>

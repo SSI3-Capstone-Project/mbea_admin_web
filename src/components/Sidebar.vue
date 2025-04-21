@@ -21,7 +21,7 @@
 
             <div class="bottom-menu">
                 <nav>
-                    <router-link to="/reports" @click="closeSidebar">Logout</router-link>
+                    <router-link to="/login" @click="exit">Logout</router-link>
                 </nav>
             </div>
         </div>
@@ -33,6 +33,9 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useAuth } from '../composable/Auth/useAuth'
+
+const { logout } = useAuth()
 
 const isOpen = ref(false)
 
@@ -42,6 +45,11 @@ function toggleSidebar() {
 
 function closeSidebar() {
     isOpen.value = false
+}
+
+function exit() {
+    isOpen.value = false
+    logout()
 }
 </script>
 

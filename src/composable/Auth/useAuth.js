@@ -1,6 +1,6 @@
-import axios from 'axios'
+import axios from './axios'
 import { ref } from 'vue'
-import { useAuthStore } from '@/stores/useAuthStore'
+import { useAuthStore } from './useAuthStore'
 
 function getRefreshTokenFromCookie() {
   const match = document.cookie.match(/(^|;) ?refresh_token=([^;]*)(;|$)/)
@@ -13,6 +13,13 @@ export function useAuth() {
   const auth = useAuthStore()
   const isProd = import.meta.env.PROD
 
+  // ✅ ฟังก์ชันช่วยเซต cookie
+  function setRefreshTokenCookie(token) {
+    document.cookie =
+      `refresh_token=${encodeURIComponent(token)}; path=/; max-age=${60 * 60 * 24 * 7}` +
+      (isProd ? '; Secure; SameSite=Strict' : '')
+  }
+
   const login = async ({ email, password }) => {
     isLoading.value = true
     error.value = null
@@ -20,7 +27,7 @@ export function useAuth() {
       const res = await axios.post('/api/operator/login', { email, password })
       const { access_token, refresh_token } = res.data.data
       auth.setToken(access_token)
-      document.cookie = `refresh_token=${encodeURIComponent(refresh_token)}; path=/; max-age=${60 * 60 * 24 * 7}`
+      setRefreshTokenCookie(refresh_token)
       return true
     } catch (err) {
       error.value = err.response?.data?.message || 'Login failed'
@@ -43,7 +50,7 @@ export function useAuth() {
       })
       const { access_token, refresh_token: newRefresh } = res.data.data
       auth.setToken(access_token)
-      document.cookie = `refresh_token=${encodeURIComponent(refresh_token)}; path=/; max-age=${60 * 60 * 24 * 7}` + (isProd ? '; Secure; SameSite=Strict' : '')
+      setRefreshTokenCookie(newRefresh)
       return true
     } catch (e) {
       auth.clearToken()
@@ -53,6 +60,7 @@ export function useAuth() {
 
   const logout = () => {
     auth.clearToken()
+    console.log('Logged out', auth.accessToken)
   }
 
   return {
