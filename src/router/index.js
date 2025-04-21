@@ -3,6 +3,7 @@ import MainLayout from '../Layouts/MainLayouts.vue'
 import BrandLists from '../components/Brands/BrandLists.vue'
 import Collections from '../components/Collections/CollectionLists.vue'
 import SubCollections from '../components/SubCollections/SubCollectionLists.vue'
+import ReportLists from '../components/Reports/ReportLists.vue'
 
 const routes = [
   {
@@ -22,9 +23,13 @@ const routes = [
         component: SubCollections
       },
       {
+        path: 'reports',
+        component: ReportLists
+      },
+      {
         path: '',
-        redirect: '/brands' // default page
-      }
+        redirect: '/reports' // default page
+      },
     ]
   }
 ]
