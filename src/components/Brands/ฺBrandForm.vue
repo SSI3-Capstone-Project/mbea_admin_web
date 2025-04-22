@@ -6,7 +6,7 @@
         <form @submit.prevent="save">
             <!-- Brand Name Field -->
             <div class="mb-4">
-                <label for="brandName" class="block font-medium mb-2">Brand Name</label>
+                <label for="brandName" class="block font-medium mb-2">Brand Name <span class="text-red-500"> * </span></label>
                 <input type="text" id="brandName" maxlength="50" v-model="brandName" placeholder="Enter brand name"
                     class="w-xl border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" />
             </div>

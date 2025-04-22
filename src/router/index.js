@@ -1,12 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import MainLayout from '../Layouts/MainLayouts.vue'
 import BrandLists from '../components/Brands/BrandLists.vue'
-import Collections from '../components/Collections/CollectionLists.vue'
-import SubCollections from '../components/SubCollections/SubCollectionLists.vue'
+import CollectionLists from '../components/Collections/CollectionLists.vue'
+import SubCollectionLists from '../components/SubCollections/SubCollectionLists.vue'
 import ReportLists from '../components/Reports/ReportLists.vue'
 import ReportDetail from '../components/Reports/ReportDetail.vue'
 import Login from '../components/Auth/Login.vue'
 import BrandForm from '../components/Brands/ฺBrandForm.vue'
+import CollectionForm from '../components/Collections/CollectionForm.vue'
+import SubCollectionForm from '../components/SubCollections/SubCollectionForm.vue'
 
 const routes = [
   {
@@ -31,11 +33,27 @@ const routes = [
       },
       {
         path: 'collections',
-        component: Collections
+        component: CollectionLists
+      },
+      {
+        path: 'collections/form',
+        component: CollectionForm
+      },
+      {
+        path: 'collections/form/:id',
+        component: CollectionForm
       },
       {
         path: 'subcollections',
-        component: SubCollections
+        component: SubCollectionLists
+      },
+      {
+        path: 'subcollections/form',
+        component: SubCollectionForm
+      },
+      {
+        path: 'subcollections/form/:id',
+        component: SubCollectionForm
       },
       {
         path: 'reports',
