@@ -6,6 +6,7 @@ import SubCollections from '../components/SubCollections/SubCollectionLists.vue'
 import ReportLists from '../components/Reports/ReportLists.vue'
 import ReportDetail from '../components/Reports/ReportDetail.vue'
 import Login from '../components/Auth/Login.vue'
+import BrandForm from '../components/Brands/ฺBrandForm.vue'
 
 const routes = [
   {
@@ -19,6 +20,14 @@ const routes = [
       {
         path: 'brands',
         component: BrandLists
+      },
+      {
+        path: 'brands/form',
+        component: BrandForm
+      },
+      {
+        path: 'brands/form/:id',
+        component: BrandForm
       },
       {
         path: 'collections',

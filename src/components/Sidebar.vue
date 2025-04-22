@@ -112,7 +112,7 @@ function exit() {
 
 /* Active Link */
 .router-link-active {
-    background-color: #e0f3ff;
+    background-color: var(--color-primary);
     color: #007acc;
     font-weight: 600;
 }
@@ -141,11 +141,8 @@ function exit() {
 .sidebar a:active,
 .sidebar a:focus {
     color: #007acc;
-    background-color: #e6f3ff;
+    background-color: var(--color-primary);
 }
-
-
-
 
 /* Responsive */
 @media (min-width: 768px) {
