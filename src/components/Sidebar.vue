@@ -157,7 +157,7 @@ function exit() {
 
     .sidebar {
         transform: translateX(0);
-        position: relative;
+        position:sticky;
         height: 100vh;
     }
 
