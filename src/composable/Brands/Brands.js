@@ -1,8 +1,8 @@
 import axios from '../Auth/axios' // ✅ axios instance ที่แนบ token ให้อัตโนมัติอยู่แล้ว
 
-export async function getAllBrands() {
+export async function getAllBrands(params = {}) {
   try {
-    const response = await axios.get('/api/operator/brands')
+    const response = await axios.get('/api/operator/brands', { params })
     console.log(response)
     return {
       success: true,

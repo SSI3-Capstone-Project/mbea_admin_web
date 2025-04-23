@@ -3,8 +3,13 @@
         <div class="table-header text-4xl font-semibold mb-10 w-full ">
             <h1>Brands</h1>
         </div>
-        <div>
-            <button to="/brands/form" class="add-button items-center shadow-md" @click="addBrand">Add Brand</button>
+        <div class="flex justify-between items-center mb-6 w-full">
+            <!-- Filter Input -->
+            <input type="text" v-model="filterBrandName" @input="fetchBrands" placeholder="Search brand name"
+                class="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" />
+            <button class="add-button items-center shadow-md" @click="addBrand">
+                Add Brand
+            </button>
         </div>
         <table class="brand-table ">
             <thead>
@@ -28,17 +33,24 @@
 </template>
 
 <script>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import { getAllBrands } from "../../composable/Brands/Brands";
+import debounce from "lodash.debounce";
 
 export default {
     setup() {
         const brands = ref([]);
         const router = useRouter();
+        const filterBrandName = ref("");
 
         const fetchBrands = async () => {
-            const response = await getAllBrands();
+            const params = {};
+            if (filterBrandName.value.trim()) {
+                params.brand_name = filterBrandName.value.trim();
+            }
+
+            const response = await getAllBrands(params);
             if (response.success) {
                 brands.value = response.data;
             } else {
@@ -57,9 +69,12 @@ export default {
             router.push("/brands/form");
         };
 
+        const debouncedFetch = debounce(fetchBrands, 400);
+        watch(filterBrandName, debouncedFetch);
+
         onMounted(fetchBrands);
 
-        return { brands, editBrand, addBrand };
+        return { brands, editBrand, addBrand, filterBrandName, fetchBrands };
     }
 };
 </script>
