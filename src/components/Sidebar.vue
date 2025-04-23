@@ -67,12 +67,12 @@ function exit() {
 
 /* Sidebar */
 .sidebar {
-    position: fixed;
+    position: fixed; /* เดิมเป็น fixed แล้ว ใช้ต่อได้เลย */
     top: 0;
     left: 0;
     width: 240px;
     height: 100vh;
-    background-color: #ffffff; /* ปรับให้ขาวนวลขึ้น */
+    background-color: #ffffff;
     padding: 20px;
     transform: translateX(-100%);
     transition: transform 0.3s ease;
@@ -80,7 +80,7 @@ function exit() {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    box-shadow: 4px 0 12px rgba(0, 0, 0, 0.1); /* เงาด้านขวาแบบนุ่ม */
+    box-shadow: 4px 0 12px rgba(0, 0, 0, 0.1);
 }
 
 /* Menu Blocks */
@@ -89,6 +89,11 @@ function exit() {
     display: flex;
     flex-direction: column;
     gap: 10px;
+}
+
+.bottom-menu nav {
+    background-color: var(--color-primary);
+    border-radius: 8px;
 }
 
 .sidebar.open {
