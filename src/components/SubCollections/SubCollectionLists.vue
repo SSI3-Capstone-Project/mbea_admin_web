@@ -52,7 +52,6 @@ export default {
             console.log("Editing subCollection:", subCollection.id);
             router.push({
                 path: `/subCollections/form/${subCollection.id}`,
-                state: { subCollection } // ส่งข้อมูลแบรนด์ไปใน state
             });
         };
 

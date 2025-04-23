@@ -3,7 +3,7 @@
         <h2 class="text-4xl font-semibold mb-10">Collection Form</h2>
 
         <!-- ✅ Wrap ด้วย form -->
-        <form @submit.prevent="submit" @keydown.enter="submit">
+        <form @submit.prevent="submit">
             <!-- Collection Name Field -->
             <div class="mb-4">
                 <label for="collectionName" class="block font-medium mb-2">

@@ -3,7 +3,7 @@
         <h2 class="text-4xl font-semibold mb-10">Subcollection Form</h2>
 
         <!-- ✅ Wrap ด้วย form -->
-        <form @submit.prevent="save" @keydown.enter="save">
+        <form  @submit.prevent="submit">
             <!-- Subcollection Name Field -->
             <!-- Subcollection Name Field -->
             <div class="mb-4">
@@ -35,7 +35,7 @@
                     type="button">
                     Cancel
                 </button>
-                <button type="submit"
+                <button type="submit" :disabled="id && !isDirty"
                     class="save-button px-4 py-2 font-bold shadow-md text-gray-800 rounded-md transition">
                     Save
                 </button>
@@ -45,9 +45,9 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { createSubCollection, updateSubCollection } from '../../composable/SubCollections/SubCollection'
+import { createSubCollection, getSubCollectionById, updateSubCollection } from '../../composable/SubCollections/SubCollection'
 import { getAllCollections } from "../../composable/Collections/Collections";
 import Swal from 'sweetalert2'
 import * as yup from 'yup'
@@ -57,28 +57,41 @@ const route = useRoute();
 const subCollectionName = ref('')
 const collectionList = ref([])
 const selectedCollectionId = ref('')
+const originalCollectionId = ref('')
+const originalSubCollectionName = ref('')
+const id = ref(null);
 
 onMounted(async () => {
     await fetchCollections();
-    const subCollection = route.state?.subCollection;
-    console.log(subCollection);  // ตรวจสอบข้อมูลที่ได้รับจาก state
-
-    if (subCollection) {
-        subCollectionName.value = subCollection.subCollection_name;
-    } else {
-        console.error('No subCollection data found in state!');
+    if (route.params.id) {
+        id.value = route.params.id
+        await getById()
     }
 });
 
 const schema = yup.object({
-    subCollection_name: yup.string().trim().required('Subcollection name is required').max(50),
+    sub_collection_name: yup.string().trim().required('Subcollection name is required').max(50),
     collection_id: yup.string().required('Please select a collection')
 })
 
-const save = async () => {
+const isDirty = computed(() => {
+    return subCollectionName.value.trim() !== originalSubCollectionName.value.trim() || selectedCollectionId.value !== originalCollectionId.value
+})
+
+const create = async (payload) => {
+    const result = await createSubCollection(payload)
+    return result
+}
+
+const update = async (id, payload) => {
+    const result = await updateSubCollection(id, payload)
+    return result
+}
+
+const submit = async () => {
     try {
         // ✅ Validate input ก่อนส่ง
-        await schema.validate({ subCollection_name: subCollectionName.value, collection_id: selectedCollectionId.value }, { abortEarly: false })
+        await schema.validate({ sub_collection_name: subCollectionName.value, collection_id: selectedCollectionId.value }, { abortEarly: false })
 
         const payload = {
             sub_collection_name: subCollectionName.value.trim(),
@@ -86,12 +99,14 @@ const save = async () => {
             status: 'active'
         }
 
-        const result = await createSubCollection(payload)
+        const result = id.value
+            ? await update(id.value, payload)
+            : await create(payload)
 
         if (result.success) {
             Swal.fire({
                 icon: 'success',
-                title: 'Subcollection created successfully!',
+                title: id.value ? 'Subcollection updated successfully!' : 'Subcollection created successfully!',
                 confirmButtonColor: '#3085d6'
             }).then(() => {
                 router.push('/subcollections')
@@ -101,21 +116,26 @@ const save = async () => {
                 icon: 'error',
                 title: result.message === 'Subcollection name already exists'
                     ? 'Subcollection name already exists'
-                    : 'Failed to create Subcollection',
-                text: result.message !== 'Subcollection name already exists'
-                    ? result.message
-                    : '',
+                    : id.value ? 'Failed to update subcollection' : 'Failed to create subcollection',
+                text: result.message !== 'Subcollection name already exists' ? result.message : '',
                 confirmButtonColor: '#d33'
             })
         }
+
     } catch (err) {
-        // ❌ แสดง validation error
         if (err instanceof yup.ValidationError) {
             Swal.fire({
                 icon: 'warning',
                 title: 'Validation Error',
-                text: err.errors.join(', '), // รวม error หลายอันถ้ามี
+                text: err.errors.join(', '),
                 confirmButtonColor: '#f59e0b'
+            })
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Unexpected Error',
+                text: 'Something went wrong while submitting the form.',
+                confirmButtonColor: '#d33'
             })
         }
     }
@@ -127,6 +147,32 @@ const fetchCollections = async () => {
         collectionList.value = response.data;
     } else {
         console.error("⚠️ Error loading collections:", response.message);
+    }
+}
+
+const getById = async () => {
+    try {
+        const res = await getSubCollectionById(id.value)
+        if (res.success) {
+            subCollectionName.value = res.data.sub_collection_name
+            selectedCollectionId.value = res.data.collection_id
+            originalSubCollectionName.value = res.data.sub_collection_name
+            originalCollectionId.value = res.data.collection_id
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Failed to fetch subcollection',
+                text: res.message || 'Unknown error',
+                confirmButtonColor: '#d33'
+            })
+        }
+    } catch (error) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Unable to load subcollection data',
+            confirmButtonColor: '#d33'
+        })
     }
 }
 
