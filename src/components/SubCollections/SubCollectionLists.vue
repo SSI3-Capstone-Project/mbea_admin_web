@@ -3,8 +3,28 @@
         <div class="table-header text-4xl font-semibold mb-10 w-full ">
             <h1>Subcollections</h1>
         </div>
-        <div>
-            <button to="/subCollections/form" class="add-button items-center shadow-md" @click="addSubCollection">Add Subcollection</button>
+        <!-- 🔍 Search & Filter Controls -->
+        <div class="flex justify-between items-center mb-6 w-full">
+            <div class="flex gap-4 items-center">
+                <!-- Subcollection Name Input -->
+                <input type="text" v-model="filterSubName" @input="fetchSubCollections"
+                    placeholder="Search subcollection name"
+                    class="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" />
+
+                <!-- Collection Name Dropdown -->
+                <select v-model="filterCollectionName" @change="fetchSubCollections"
+                    class="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                    <option value="">All Collections</option>
+                    <option v-for="col in collectionList" :key="col.id" :value="col.collection_name">
+                        {{ col.collection_name }}
+                    </option>
+                </select>
+            </div>
+
+            <!-- Add Button -->
+            <button class="add-button shadow-md" @click="addSubCollection">
+                Add Subcollection
+            </button>
         </div>
         <table class="subCollection-table ">
             <thead>
@@ -30,23 +50,43 @@
 </template>
 
 <script>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import { getAllSubCollections } from "../../composable/SubCollections/SubCollection";
+import { getAllCollections } from "../../composable/Collections/Collections";
+import debounce from "lodash.debounce";
 
 export default {
     setup() {
         const subCollections = ref([]);
         const router = useRouter();
+        const collectionList = ref([]);
+        const filterSubName = ref("");
+        const filterCollectionName = ref("");
 
         const fetchSubCollections = async () => {
-            const response = await getAllSubCollections();
+            const params = {};
+            if (filterSubName.value.trim()) {
+                params.sub_collection_name = filterSubName.value.trim();
+            }
+            if (filterCollectionName.value) {
+                params.collection_name = filterCollectionName.value;
+            }
+
+            const response = await getAllSubCollections(params);
             if (response.success) {
                 subCollections.value = response.data;
             } else {
                 console.error("⚠️ Error loading subCollections:", response.message);
             }
         };
+
+        const fetchCollections = async () => {
+            const res = await getAllCollections();
+            if (res.success) {
+                collectionList.value = res.data;
+            }
+        }
 
         const editSubCollection = (subCollection) => {
             console.log("Editing subCollection:", subCollection.id);
@@ -59,9 +99,16 @@ export default {
             router.push("/subCollections/form");
         };
 
-        onMounted(fetchSubCollections);
+        const debouncedFetch = debounce(fetchSubCollections, 400);
 
-        return { subCollections, editSubCollection, addSubCollection };
+        watch([filterSubName, filterCollectionName], debouncedFetch);
+
+        onMounted(async () => {
+            await fetchCollections();
+            await fetchSubCollections();
+        });
+
+        return { subCollections, editSubCollection, addSubCollection, collectionList, filterCollectionName, filterSubName};
     }
 };
 </script>

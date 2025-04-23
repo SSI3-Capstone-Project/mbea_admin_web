@@ -1,21 +1,20 @@
 import axios from '../Auth/axios' // ✅ axios instance ที่แนบ token ให้อัตโนมัติอยู่แล้ว
 
-export async function getAllSubCollections() {
+export async function getAllSubCollections(params = {}) {
   try {
-    const response = await axios.get('/api/operator/subcollections')
-    console.log(response)
+    const response = await axios.get('/api/operator/subcollections', { params });
     return {
       success: true,
-      data: response.data.data, // ✅ array ของ subcollections
+      data: response.data.data,
       message: response.data.message
-    }
+    };
   } catch (error) {
-    console.error('❌ Failed to get subcollections:', error)
+    console.error('❌ Failed to get subcollections:', error);
     return {
       success: false,
       data: [],
       message: error.response?.data?.message || 'Something went wrong'
-    }
+    };
   }
 }
 

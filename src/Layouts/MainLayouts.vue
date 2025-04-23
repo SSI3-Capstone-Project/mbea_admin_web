@@ -17,12 +17,23 @@ const route = useRoute()
 
 
 <style scoped>
-.layout {
-  display: flex;
+@media (min-width: 768px) {
+  .layout {
+    display: flex;
+  }
+
+  .main-content {
+    flex: 1;
+    padding: 30px;
+  }
 }
 
-.main-content {
-  flex: 1;
-  padding: 30px;
+@media (max-width: 767px) {
+
+  .main-content {
+    flex: 1;
+    padding-left: 30px;
+    padding-right: 30px;
+  }
 }
 </style>
