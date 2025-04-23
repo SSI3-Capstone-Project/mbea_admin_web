@@ -7,7 +7,7 @@
             <div class="flex gap-4 items-center">
                 <!-- Subcollection Name Input -->
                 <input type="text" v-model="filterCollectionName" @input="fetchCollections"
-                    placeholder="Search subcollection name"
+                    placeholder="Search collection name"
                     class="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" />
 
                 <!-- Collection Name Dropdown -->
