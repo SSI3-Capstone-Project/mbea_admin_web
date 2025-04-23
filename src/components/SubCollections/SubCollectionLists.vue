@@ -108,7 +108,7 @@ export default {
             await fetchSubCollections();
         });
 
-        return { subCollections, editSubCollection, addSubCollection, collectionList, filterCollectionName, filterSubName};
+        return { subCollections, editSubCollection, addSubCollection, collectionList, filterCollectionName, filterSubName, fetchSubCollections};
     }
 };
 </script>
