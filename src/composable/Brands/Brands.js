@@ -19,6 +19,24 @@ export async function getAllBrands() {
   }
 }
 
+export const getBrandById = async (brandID) => {
+  try {
+    const response = await axios.get(`/api/operator/brands/${brandID}`)
+    return {
+      success: true,
+      data: response.data.data, // ✅ ข้อมูลของแบรนด์เดี่ยว
+      message: response.data.message || 'Brand fetched successfully'
+    }
+  } catch (error) {
+    console.error(`❌ Failed to get brand with ID ${brandID}:`, error)
+    return {
+      success: false,
+      data: null,
+      message: error.response?.data?.message || 'Something went wrong'
+    }
+  }
+}
+
 export const createBrand = async (payload) => {
   try {
       const res = await axios.post('/api/operator/brands', payload)
@@ -49,6 +67,13 @@ export const updateBrand = async (brandID, payload) => {
           data: response.data
       }
   } catch (error) {
+      if (error.response && error.response.status === 409) {
+          return {
+              success: false,
+              message: 'Brand name already exists'
+          }
+      }
+
       return {
           success: false,
           message: error.response?.data?.error?.message || 'An error occurred'

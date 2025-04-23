@@ -50,7 +50,6 @@ export default {
             console.log("Editing brand:", brand.id);
             router.push({
                 path: `/brands/form/${brand.id}`,
-                state: { brand } // ส่งข้อมูลแบรนด์ไปใน state
             });
         };
 

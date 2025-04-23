@@ -3,10 +3,11 @@
         <h2 class="text-4xl font-semibold mb-10">Brand Form</h2>
 
         <!-- ✅ Wrap ด้วย form -->
-        <form @submit.prevent="save">
+        <form @submit.prevent="submit">
             <!-- Brand Name Field -->
             <div class="mb-4">
-                <label for="brandName" class="block font-medium mb-2">Brand Name <span class="text-red-500"> * </span></label>
+                <label for="brandName" class="block font-medium mb-2">Brand Name <span class="text-red-500"> *
+                    </span></label>
                 <input type="text" id="brandName" maxlength="50" v-model="brandName" placeholder="Enter brand name"
                     class="w-xl border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" />
             </div>
@@ -17,7 +18,8 @@
                     type="button">
                     Cancel
                 </button>
-                <button type="submit"
+                <!-- Save Button -->
+                <button type="submit" :disabled="id && !isDirty"
                     class="save-button px-4 py-2 font-bold shadow-md text-gray-800 rounded-md transition">
                     Save
                 </button>
@@ -27,32 +29,44 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { createBrand, updateBrand } from '../../composable/Brands/Brands'
+import { createBrand, updateBrand, getBrandById } from '../../composable/Brands/Brands'
 import Swal from 'sweetalert2'
 import * as yup from 'yup'
 
 const router = useRouter()
 const route = useRoute();
 const brandName = ref('')
+const originalBrandName = ref('')
+const id = ref(null);
 
-onMounted(() => {
-    const brand = route.state?.brand;
-    console.log(brand);  // ตรวจสอบข้อมูลที่ได้รับจาก state
-
-    if (brand) {
-        brandName.value = brand.brand_name;
-    } else {
-        console.error('No brand data found in state!');
+onMounted(async () => {
+    if (route.params.id) {
+        id.value = route.params.id
+        await getById()
     }
 });
+
+const isDirty = computed(() => {
+    return brandName.value.trim() !== originalBrandName.value.trim()
+})
 
 const schema = yup.object({
     brand_name: yup.string().trim().required('Brand name is required').max(50)
 })
 
-const save = async () => {
+const create = async (payload) => {
+    const result = await createBrand(payload)
+    return result
+}
+
+const update = async (id, payload) => {
+    const result = await updateBrand(id, payload)
+    return result
+}
+
+const submit = async () => {
     try {
         // ✅ Validate input ก่อนส่ง
         await schema.validate({ brand_name: brandName.value }, { abortEarly: false })
@@ -62,12 +76,14 @@ const save = async () => {
             status: 'active'
         }
 
-        const result = await createBrand(payload)
+        const result = id.value
+            ? await update(id.value, payload)
+            : await create(payload)
 
         if (result.success) {
             Swal.fire({
                 icon: 'success',
-                title: 'Brand created successfully!',
+                title: id.value ? 'Brand updated successfully!' : 'Brand created successfully!',
                 confirmButtonColor: '#3085d6'
             }).then(() => {
                 router.push('/brands')
@@ -77,23 +93,52 @@ const save = async () => {
                 icon: 'error',
                 title: result.message === 'Brand name already exists'
                     ? 'Brand name already exists'
-                    : 'Failed to create brand',
-                text: result.message !== 'Brand name already exists'
-                    ? result.message
-                    : '',
+                    : id.value ? 'Failed to update brand' : 'Failed to create brand',
+                text: result.message !== 'Brand name already exists' ? result.message : '',
                 confirmButtonColor: '#d33'
             })
         }
+
     } catch (err) {
-        // ❌ แสดง validation error
         if (err instanceof yup.ValidationError) {
             Swal.fire({
                 icon: 'warning',
                 title: 'Validation Error',
-                text: err.errors.join(', '), // รวม error หลายอันถ้ามี
+                text: err.errors.join(', '),
                 confirmButtonColor: '#f59e0b'
             })
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Unexpected Error',
+                text: 'Something went wrong while submitting the form.',
+                confirmButtonColor: '#d33'
+            })
         }
+    }
+}
+
+const getById = async () => {
+    try {
+        const res = await getBrandById(id.value)
+        if (res.success) {
+            brandName.value = res.data.brand_name
+            originalBrandName.value = res.data.brand_name
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Failed to fetch brand',
+                text: res.message || 'Unknown error',
+                confirmButtonColor: '#d33'
+            })
+        }
+    } catch (error) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Unable to load brand data',
+            confirmButtonColor: '#d33'
+        })
     }
 }
 
@@ -121,6 +166,11 @@ button.cancel-button {
 }
 
 button.cancel-button:hover {
-    background-color:  var(--color-button-cancel-hover);
+    background-color: var(--color-button-cancel-hover);
+}
+
+.save-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 </style>
