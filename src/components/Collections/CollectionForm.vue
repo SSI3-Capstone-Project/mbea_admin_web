@@ -5,7 +5,6 @@
         <!-- ✅ Wrap ด้วย form -->
         <form @submit.prevent="submit" @keydown.enter="save">
             <!-- Collection Name Field -->
-            <!-- Collection Name Field -->
             <div class="mb-4">
                 <label for="collectionName" class="block font-medium mb-2">
                     Collection Name <span class="text-red-500">*</span>

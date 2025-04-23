@@ -15,7 +15,7 @@
                     <router-link to="/reports" @click="closeSidebar">Reports</router-link>
                     <router-link to="/brands" @click="closeSidebar">Brands</router-link>
                     <router-link to="/collections" @click="closeSidebar">Collections</router-link>
-                    <router-link to="/subcollections" @click="closeSidebar">SubCollections</router-link>
+                    <router-link to="/subcollections" @click="closeSidebar">Subcollections</router-link>
                 </nav>
             </div>
 
