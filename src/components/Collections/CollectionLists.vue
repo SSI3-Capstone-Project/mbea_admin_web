@@ -3,8 +3,24 @@
         <div class="table-header text-4xl font-semibold mb-10 w-full ">
             <h1>Collections</h1>
         </div>
-        <div>
-            <button to="/collections/form" class="add-button items-center shadow-md" @click="addCollection">Add Collection</button>
+        <div class="flex justify-between items-center mb-6 w-full">
+            <div class="flex gap-4 items-center">
+                <!-- Subcollection Name Input -->
+                <input type="text" v-model="filterCollectionName" @input="fetchCollections"
+                    placeholder="Search subcollection name"
+                    class="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" />
+
+                <!-- Collection Name Dropdown -->
+                <select v-model="filterBrandName" @change="fetchCollections"
+                    class="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                    <option value="">All Brands</option>
+                    <option v-for="col in brandNameList" :key="col.id" :value="col.brand_name">
+                        {{ col.brand_name }}
+                    </option>
+                </select>
+            </div>
+            <button to="/collections/form" class="add-button items-center shadow-md" @click="addCollection">Add
+                Collection</button>
         </div>
         <table class="collection-table ">
             <thead>
@@ -30,23 +46,43 @@
 </template>
 
 <script>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import { getAllCollections } from "../../composable/Collections/Collections";
+import { getAllBrands } from "../../composable/Brands/Brands"
+import debounce from "lodash.debounce";
 
 export default {
     setup() {
         const collections = ref([]);
         const router = useRouter();
+        const filterCollectionName = ref("");
+        const filterBrandName = ref("");
+        const brandNameList = ref([]);
 
         const fetchCollections = async () => {
-            const response = await getAllCollections();
+            const params = {};
+            if (filterCollectionName.value.trim()) {
+                params.collection_name = filterCollectionName.value.trim();
+            }
+            if (filterBrandName.value) {
+                params.brand_name = filterBrandName.value;
+            }
+
+            const response = await getAllCollections(params);
             if (response.success) {
                 collections.value = response.data;
             } else {
-                console.error("⚠️ Error loading collections:", response.message);
+                console.error("⚠️ Error loading brands:", response.message);
             }
         };
+
+        const fetchBrands = async () => {
+            const res = await getAllBrands();
+            if (res.success) {
+                brandNameList.value = res.data;
+            }
+        }
 
         const editCollection = (collection) => {
             console.log("Editing collection:", collection.id);
@@ -59,9 +95,17 @@ export default {
             router.push("/collections/form");
         };
 
-        onMounted(fetchCollections);
+        const debouncedFetch = debounce(fetchCollections, 400);
 
-        return { collections, editCollection, addCollection };
+        watch([filterCollectionName, filterBrandName], debouncedFetch);
+
+        onMounted(async () => {
+            await fetchCollections();
+            await fetchBrands();
+        });
+
+
+        return { collections, editCollection, addCollection, brandNameList, filterBrandName, filterCollectionName, fetchCollections };
     }
 };
 </script>
