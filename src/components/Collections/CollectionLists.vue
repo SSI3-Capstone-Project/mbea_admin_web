@@ -52,7 +52,6 @@ export default {
             console.log("Editing collection:", collection.id);
             router.push({
                 path: `/collections/form/${collection.id}`,
-                state: { collection } // ส่งข้อมูลแบรนด์ไปใน state
             });
         };
 

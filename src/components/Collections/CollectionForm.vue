@@ -3,7 +3,7 @@
         <h2 class="text-4xl font-semibold mb-10">Collection Form</h2>
 
         <!-- ✅ Wrap ด้วย form -->
-        <form @submit.prevent="save" @keydown.enter="save">
+        <form @submit.prevent="submit" @keydown.enter="save">
             <!-- Collection Name Field -->
             <!-- Collection Name Field -->
             <div class="mb-4">
@@ -35,7 +35,7 @@
                     type="button">
                     Cancel
                 </button>
-                <button type="submit"
+                <button type="submit" :disabled="id && !isDirty"
                     class="save-button px-4 py-2 font-bold shadow-md text-gray-800 rounded-md transition">
                     Save
                 </button>
@@ -45,9 +45,9 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { createCollection, updateCollection } from '../../composable/Collections/Collections'
+import { createCollection, getCollectionById, updateCollection } from '../../composable/Collections/Collections'
 import { getAllBrands } from "../../composable/Brands/Brands";
 import Swal from 'sweetalert2'
 import * as yup from 'yup'
@@ -57,41 +57,55 @@ const route = useRoute();
 const collectionName = ref('')
 const brandList = ref([])
 const selectedBrandId = ref('')
+const originalCollectionName = ref('')
+const originalBrandId = ref('')
+const id = ref(null);
 
 onMounted(async () => {
     await fetchBrands();
-    const collection = route.state?.collection;
-    console.log(collection);  // ตรวจสอบข้อมูลที่ได้รับจาก state
-
-    if (collection) {
-        collectionName.value = collection.collection_name;
-    } else {
-        console.error('No collection data found in state!');
+    if (route.params.id) {
+        id.value = route.params.id
+        await getById()
     }
 });
+
+const isDirty = computed(() => {
+    return collectionName.value.trim() !== originalCollectionName.value.trim() || selectedBrandId.value !== originalBrandId.value
+})
 
 const schema = yup.object({
     collection_name: yup.string().trim().required('Collection name is required').max(50),
     brand_id: yup.string().required('Please select a brand')
 })
 
-const save = async () => {
+const create = async (payload) => {
+    const result = await createCollection(payload)
+    return result
+}
+
+const update = async (id, payload) => {
+    const result = await updateCollection(id, payload)
+    return result
+}
+
+const submit = async () => {
     try {
         // ✅ Validate input ก่อนส่ง
         await schema.validate({ collection_name: collectionName.value, brand_id: selectedBrandId.value }, { abortEarly: false })
 
         const payload = {
             collection_name: collectionName.value.trim(),
-            brand_id: selectedBrandId.value,
             status: 'active'
         }
 
-        const result = await createCollection(payload)
+        const result = id.value
+            ? await update(id.value, payload)
+            : await create(payload)
 
         if (result.success) {
             Swal.fire({
                 icon: 'success',
-                title: 'Collection created successfully!',
+                title: id.value ? 'Collection updated successfully!' : 'Collection created successfully!',
                 confirmButtonColor: '#3085d6'
             }).then(() => {
                 router.push('/collections')
@@ -101,21 +115,26 @@ const save = async () => {
                 icon: 'error',
                 title: result.message === 'Collection name already exists'
                     ? 'Collection name already exists'
-                    : 'Failed to create collection',
-                text: result.message !== 'collection name already exists'
-                    ? result.message
-                    : '',
+                    : id.value ? 'Failed to update collection' : 'Failed to create collection',
+                text: result.message !== 'Collection name already exists' ? result.message : '',
                 confirmButtonColor: '#d33'
             })
         }
+
     } catch (err) {
-        // ❌ แสดง validation error
         if (err instanceof yup.ValidationError) {
             Swal.fire({
                 icon: 'warning',
                 title: 'Validation Error',
-                text: err.errors.join(', '), // รวม error หลายอันถ้ามี
+                text: err.errors.join(', '),
                 confirmButtonColor: '#f59e0b'
+            })
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Unexpected Error',
+                text: 'Something went wrong while submitting the form.',
+                confirmButtonColor: '#d33'
             })
         }
     }
@@ -127,6 +146,32 @@ const fetchBrands = async () => {
         brandList.value = response.data;
     } else {
         console.error("⚠️ Error loading brands:", response.message);
+    }
+}
+
+const getById = async () => {
+    try {
+        const res = await getCollectionById(id.value)
+        if (res.success) {
+            collectionName.value = res.data.collection_name
+            selectedBrandId.value = res.data.brand_id
+            originalCollectionName.value = res.data.collection_name
+            originalBrandId.value = res.data.brand_id
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Failed to fetch collection',
+                text: res.message || 'Unknown error',
+                confirmButtonColor: '#d33'
+            })
+        }
+    } catch (error) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Unable to load collection data',
+            confirmButtonColor: '#d33'
+        })
     }
 }
 

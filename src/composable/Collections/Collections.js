@@ -19,39 +19,64 @@ export async function getAllCollections() {
   }
 }
 
+export const getCollectionById = async (collectionID) => {
+  try {
+    const response = await axios.get(`/api/operator/collections/${collectionID}`)
+    return {
+      success: true,
+      data: response.data.data, // ✅ ข้อมูลของแบรนด์เดี่ยว
+      message: response.data.message || 'Collection fetched successfully'
+    }
+  } catch (error) {
+    console.error(`❌ Failed to get collection with ID ${collectionID}:`, error)
+    return {
+      success: false,
+      data: null,
+      message: error.response?.data?.message || 'Something went wrong'
+    }
+  }
+}
+
 export const createCollection = async (payload) => {
   try {
-      const res = await axios.post('/api/operator/collections', payload)
-      return {
-          success: true,
-          data: res.data
-      }
+    const res = await axios.post('/api/operator/collections', payload)
+    return {
+      success: true,
+      data: res.data
+    }
   } catch (err) {
-      if (err.response && err.response.status === 409) {
-          return {
-              success: false,
-              message: 'Collection name already exists'
-          }
-      }
-
+    if (err.response && err.response.status === 409) {
       return {
-          success: false,
-          message: err.response?.data?.error?.message || 'Something went wrong'
+        success: false,
+        message: 'Collection name already exists'
       }
+    }
+
+    return {
+      success: false,
+      message: err.response?.data?.error?.message || 'Something went wrong'
+    }
   }
 }
 
 export const updateCollection = async (collectionID, payload) => {
   try {
-      const response = await axios.patch(`/api/operator/collections/${collectionID}`, payload)
-      return {
-          success: true,
-          data: response.data
-      }
+    const response = await axios.patch(`/api/operator/collections/${collectionID}`, payload)
+    return {
+      success: true,
+      data: response.data
+    }
   } catch (error) {
+    if (error.response && error.response.status === 409) {
       return {
-          success: false,
-          message: error.response?.data?.error?.message || 'An error occurred'
+        success: false,
+        message: 'Collection name already exists'
       }
+    }
+
+    return {
+      success: false,
+      message: error.response?.data?.error?.message || 'An error occurred'
+    }
   }
 }
