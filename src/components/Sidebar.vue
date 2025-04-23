@@ -94,6 +94,8 @@ function exit() {
 .bottom-menu nav {
     background-color: var(--color-primary);
     border-radius: 8px;
+    color: #007acc;
+    font-weight: 600;
 }
 
 .sidebar.open {
