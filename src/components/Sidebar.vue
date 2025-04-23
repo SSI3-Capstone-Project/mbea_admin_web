@@ -170,5 +170,9 @@ function exit() {
     .hamburger {
         display: block;
     }
+
+    .sidebar {
+        height: 100%;
+    }
 }
 </style>
