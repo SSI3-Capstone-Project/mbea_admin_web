@@ -94,6 +94,7 @@ const submit = async () => {
 
         const payload = {
             collection_name: collectionName.value.trim(),
+            brand_id: selectedBrandId.value,
             status: 'active'
         }
 
