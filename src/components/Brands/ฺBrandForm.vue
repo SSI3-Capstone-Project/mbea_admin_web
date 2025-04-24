@@ -171,4 +171,19 @@ button.cancel-button:hover {
     opacity: 0.5;
     cursor: not-allowed;
 }
+
+@media (max-width: 640px) {
+    /* Input ปรับเต็มจอ */
+    input[type="text"] {
+        width: 100% !important;
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    /* Label ขนาดเล็กลงนิดนึง */
+    label {
+        font-size: 14px;
+    }
+}
+
 </style>

@@ -199,4 +199,25 @@ button.cancel-button {
 button.cancel-button:hover {
     background-color: var(--color-button-cancel-hover);
 }
+
+@media (max-width: 640px) {
+
+    /* Input ปรับเต็มจอ */
+    input[type="text"] {
+        width: 100% !important;
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    select {
+        width: 100%;
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    /* Label ขนาดเล็กลงนิดนึง */
+    label {
+        font-size: 14px;
+    }
+}
 </style>

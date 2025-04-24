@@ -140,6 +140,23 @@ button {
     transition: background-color 0.2s ease;
 }
 
+/* บรรทัด input กับปุ่ม */
+.flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: nowrap; /* 💡 ห้ามขึ้นบรรทัดใหม่ */
+    gap: 12px;
+}
+
+/* กำหนด input กว้างพอดี */
+input[type="text"] {
+    flex: 1;
+    max-width: 300px;
+    min-width: 150px;
+}
+
+/* ปุ่ม Add Brand */
 .add-button {
     background-color: var(--color-primary);
     padding: 8px 16px;
@@ -147,12 +164,26 @@ button {
     border-radius: 6px;
     cursor: pointer;
     transition: background-color 0.2s ease;
-    margin-bottom: 16px;
+    white-space: nowrap;
 }
 
-/* ✅ ทำให้ปุ่ม Add Brand ชิดขวา */
-.add-button:only-child {
-    display: block;
-    margin-left: auto;
+/* Responsive สำหรับจอเล็ก */
+@media (max-width: 640px) {
+    input[type="text"] {
+        font-size: 14px;
+        padding: 6px 10px;
+        max-width: 200px;
+    }
+
+    .add-button {
+        font-size: 14px;
+        padding: 6px 12px;
+    }
+
+    th,
+    td {
+        font-size: 14px;
+        padding: 8px 12px;
+    }
 }
 </style>

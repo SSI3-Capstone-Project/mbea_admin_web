@@ -41,10 +41,25 @@ watch(() => route.meta.title, (newTitle) => {
 
 @media (max-width: 767px) {
 
+  .page-title {
+    font-size: 1.5rem; /* ประมาณ text-2xl */
+  }
+
   .main-content {
     flex: 1;
     padding-left: 30px;
     padding-right: 30px;
+  }
+}
+
+@media (min-width: 768px) {
+  .layout {
+    display: flex;
+  }
+
+  .main-content {
+    flex: 1;
+    padding: 30px;
   }
 }
 </style>
