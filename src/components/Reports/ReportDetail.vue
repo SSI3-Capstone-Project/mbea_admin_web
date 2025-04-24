@@ -85,7 +85,7 @@ const markAsResolved = async () => {
                     <div>
                         <p class="text-gray-500 dark:text-gray-400 text-sm">Email</p>
                     <p class="text-gray-900 dark:text-white whitespace-pre-wrap break-words leading-relaxed">
-                        puphapomngern@gmail.com
+                        {{ report.reporter_email }}
                     </p>
                     </div>
                     <div>
