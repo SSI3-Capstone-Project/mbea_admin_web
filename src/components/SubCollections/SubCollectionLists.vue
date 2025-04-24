@@ -35,8 +35,12 @@
             <tbody>
                 <tr v-for="(subCollection, index) in subCollections" :key="subCollection.id">
                     <td>{{ index + 1 }}</td>
-                    <td>{{ subCollection.sub_collection_name }}</td>
-                    <td>{{ subCollection.collection_name }}</td>
+                    <td>
+                        <div class="ellipsis-2-lines">{{ subCollection.sub_collection_name }}</div>
+                    </td>
+                    <td>
+                        <div class="ellipsis-2-lines">{{ subCollection.collection_name }}</div>
+                    </td>
                     <td>
                         <button class="shadow-md" @click="editSubCollection(subCollection)">edit</button>
                     </td>
@@ -105,7 +109,7 @@ export default {
             await fetchSubCollections();
         });
 
-        return { subCollections, editSubCollection, addSubCollection, collectionList, filterCollectionName, filterSubName, fetchSubCollections};
+        return { subCollections, editSubCollection, addSubCollection, collectionList, filterCollectionName, filterSubName, fetchSubCollections };
     }
 };
 </script>
@@ -127,7 +131,6 @@ h1 {
 /* Style for the table */
 .subCollection-table {
     width: 100%;
-    /* ยังคงใช้ขนาดเต็ม */
     border-collapse: collapse;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -139,9 +142,7 @@ th,
 td {
     padding: 12px 16px;
     text-align: center;
-    /* จัดข้อมูลให้อยู่กลางแนวนอน */
     vertical-align: middle;
-    /* จัดข้อมูลให้ตรงกลางแนวตั้ง */
 }
 
 th {
@@ -164,16 +165,6 @@ button:hover {
     background-color: var(--color-button-hover);
 }
 
-button {
-    background-color: var(--color-primary);
-    padding: 6px 12px;
-    margin: 0 5px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
 .add-button {
     background-color: var(--color-primary);
     padding: 8px 16px;
@@ -188,5 +179,53 @@ button {
 .add-button:only-child {
     display: block;
     margin-left: auto;
+}
+
+.ellipsis-2-lines {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.4em;
+    max-height: 2.8em;
+    /* = 2 lines */
+}
+
+/* ✅ Responsive สำหรับหน้าจอเล็ก */
+@media (max-width: 640px) {
+
+    input[type="text"],
+    select {
+        font-size: 14px;
+        padding: 6px 10px;
+        max-width: 200px;
+    }
+
+    .add-button {
+        font-size: 14px;
+        padding: 6px 12px;
+    }
+
+    th,
+    td {
+        font-size: 14px;
+        padding: 8px 12px;
+    }
+
+    .flex {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .flex.justify-between {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .add-button {
+        margin-top: 10px;
+        align-self: flex-end;
+    }
 }
 </style>

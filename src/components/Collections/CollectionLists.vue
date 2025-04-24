@@ -31,8 +31,12 @@
             <tbody>
                 <tr v-for="(collection, index) in collections" :key="collection.id">
                     <td>{{ index + 1 }}</td>
-                    <td>{{ collection.collection_name }}</td>
-                    <td>{{ collection.brand_name }}</td>
+                    <td>
+                        <div class="ellipsis-2-lines">{{ collection.collection_name }}</div>
+                    </td>
+                    <td>
+                        <div class="ellipsis-2-lines">{{ collection.brand_name }}</div>
+                    </td>
                     <td>
                         <button class="shadow-md" @click="editCollection(collection)">edit</button>
                     </td>
@@ -185,5 +189,53 @@ button {
 .add-button:only-child {
     display: block;
     margin-left: auto;
+}
+
+.ellipsis-2-lines {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.4em;
+    max-height: 2.8em;
+    /* = 2 lines */
+}
+
+/* ✅ Responsive สำหรับหน้าจอเล็ก */
+@media (max-width: 640px) {
+
+    input[type="text"],
+    select {
+        font-size: 14px;
+        padding: 6px 10px;
+        max-width: 200px;
+    }
+
+    .add-button {
+        font-size: 14px;
+        padding: 6px 12px;
+    }
+
+    th,
+    td {
+        font-size: 14px;
+        padding: 8px 12px;
+    }
+
+    .flex {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .flex.justify-between {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .add-button {
+        margin-top: 10px;
+        align-self: flex-end;
+    }
 }
 </style>
