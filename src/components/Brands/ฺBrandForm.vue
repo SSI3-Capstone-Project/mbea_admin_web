@@ -1,7 +1,5 @@
 <template>
     <div>
-        <h2 class="text-4xl font-semibold mb-10">Brand Form</h2>
-
         <!-- ✅ Wrap ด้วย form -->
         <form @submit.prevent="submit">
             <!-- Brand Name Field -->

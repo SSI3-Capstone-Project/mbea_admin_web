@@ -1,8 +1,5 @@
 <template>
     <div class="">
-        <div class="table-header text-4xl font-semibold mb-10 w-full ">
-            <h1>Brands</h1>
-        </div>
         <div class="flex justify-between items-center mb-6 w-full">
             <!-- Filter Input -->
             <input type="text" v-model="filterBrandName" @input="fetchBrands" placeholder="Search brand name"

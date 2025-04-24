@@ -1,8 +1,5 @@
 <template>
     <div class="">
-        <div class="table-header text-4xl font-semibold mb-10 w-full ">
-            <h1>Subcollections</h1>
-        </div>
         <!-- 🔍 Search & Filter Controls -->
         <div class="flex justify-between items-center mb-6 w-full">
             <div class="flex gap-4 items-center">
@@ -91,12 +88,12 @@ export default {
         const editSubCollection = (subCollection) => {
             console.log("Editing subCollection:", subCollection.id);
             router.push({
-                path: `/subCollections/form/${subCollection.id}`,
+                path: `/subcollections/form/${subCollection.id}`,
             });
         };
 
         const addSubCollection = () => {
-            router.push("/subCollections/form");
+            router.push("/subcollections/form");
         };
 
         const debouncedFetch = debounce(fetchSubCollections, 400);

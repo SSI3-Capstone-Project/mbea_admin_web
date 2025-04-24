@@ -12,10 +12,10 @@
 
             <div class="top-menu mt-10 md:mt-0">
                 <nav>
-                    <router-link to="/reports" @click="closeSidebar">Reports</router-link>
-                    <router-link to="/brands" @click="closeSidebar">Brands</router-link>
-                    <router-link to="/collections" @click="closeSidebar">Collections</router-link>
-                    <router-link to="/subcollections" @click="closeSidebar">Subcollections</router-link>
+                    <router-link to="/reports" @click="closeSidebar" :class="{ 'router-link-active': route.path.startsWith('/reports') }">Reports</router-link>
+                    <router-link to="/brands" @click="closeSidebar" :class="{ 'router-link-active': route.path.startsWith('/brands') }">Brands</router-link>
+                    <router-link to="/collections" @click="closeSidebar" :class="{ 'router-link-active': route.path.startsWith('/collections') }">Collections</router-link>
+                    <router-link to="/subcollections" @click="closeSidebar" :class="{ 'router-link-active': route.path.startsWith('/subcollections') }">Subcollections</router-link>
                 </nav>
             </div>
 
@@ -34,6 +34,9 @@
 <script setup>
 import { ref } from 'vue'
 import { useAuth } from '../composable/Auth/useAuth'
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
 
 const { logout } = useAuth()
 

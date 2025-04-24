@@ -1,8 +1,5 @@
 <template>
     <div class="">
-        <div class="table-header text-4xl font-semibold mb-10 w-full ">
-            <h1>Collections</h1>
-        </div>
         <div class="flex justify-between items-center mb-6 w-full">
             <div class="flex gap-4 items-center">
                 <!-- Subcollection Name Input -->
