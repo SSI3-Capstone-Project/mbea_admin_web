@@ -106,3 +106,9 @@ const filteredReports = computed(() => {
     </div>
   </div>
 </template>
+
+<style scoped>
+th{
+  background-color: var(--color-primary);
+}
+</style>
