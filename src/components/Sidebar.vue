@@ -12,10 +12,10 @@
 
             <div class="top-menu mt-10 md:mt-0">
                 <nav>
-                    <router-link to="/reports" @click="closeSidebar">Reports</router-link>
-                    <router-link to="/brands" @click="closeSidebar">Brands</router-link>
-                    <router-link to="/collections" @click="closeSidebar">Collections</router-link>
-                    <router-link to="/subcollections" @click="closeSidebar">SubCollections</router-link>
+                    <router-link to="/reports" @click="closeSidebar" :class="{ 'router-link-active': route.path.startsWith('/reports') }">Reports</router-link>
+                    <router-link to="/brands" @click="closeSidebar" :class="{ 'router-link-active': route.path.startsWith('/brands') }">Brands</router-link>
+                    <router-link to="/collections" @click="closeSidebar" :class="{ 'router-link-active': route.path.startsWith('/collections') }">Collections</router-link>
+                    <router-link to="/subcollections" @click="closeSidebar" :class="{ 'router-link-active': route.path.startsWith('/subcollections') }">Subcollections</router-link>
                 </nav>
             </div>
 
@@ -34,6 +34,9 @@
 <script setup>
 import { ref } from 'vue'
 import { useAuth } from '../composable/Auth/useAuth'
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
 
 const { logout } = useAuth()
 
@@ -67,12 +70,12 @@ function exit() {
 
 /* Sidebar */
 .sidebar {
-    position: fixed;
+    position: fixed; /* เดิมเป็น fixed แล้ว ใช้ต่อได้เลย */
     top: 0;
     left: 0;
     width: 240px;
     height: 100vh;
-    background-color: #ffffff; /* ปรับให้ขาวนวลขึ้น */
+    background-color: #ffffff;
     padding: 20px;
     transform: translateX(-100%);
     transition: transform 0.3s ease;
@@ -80,7 +83,7 @@ function exit() {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    box-shadow: 4px 0 12px rgba(0, 0, 0, 0.1); /* เงาด้านขวาแบบนุ่ม */
+    box-shadow: 4px 0 12px rgba(0, 0, 0, 0.1);
 }
 
 /* Menu Blocks */
@@ -89,6 +92,13 @@ function exit() {
     display: flex;
     flex-direction: column;
     gap: 10px;
+}
+
+.bottom-menu nav {
+    background-color: var(--color-primary);
+    border-radius: 8px;
+    color: #007acc;
+    font-weight: 600;
 }
 
 .sidebar.open {
@@ -112,7 +122,7 @@ function exit() {
 
 /* Active Link */
 .router-link-active {
-    background-color: #e0f3ff;
+    background-color: var(--color-primary);
     color: #007acc;
     font-weight: 600;
 }
@@ -141,11 +151,8 @@ function exit() {
 .sidebar a:active,
 .sidebar a:focus {
     color: #007acc;
-    background-color: #e6f3ff;
+    background-color: var(--color-primary);
 }
-
-
-
 
 /* Responsive */
 @media (min-width: 768px) {
@@ -155,7 +162,7 @@ function exit() {
 
     .sidebar {
         transform: translateX(0);
-        position: relative;
+        position:sticky;
         height: 100vh;
     }
 
@@ -167,6 +174,10 @@ function exit() {
 @media (max-width: 767px) {
     .hamburger {
         display: block;
+    }
+
+    .sidebar {
+        height: 100%;
     }
 }
 </style>
