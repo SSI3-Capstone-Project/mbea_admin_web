@@ -77,7 +77,7 @@ const routes = [
       },
       {
         path: '',
-        redirect: { path: '/login' } // default page
+        redirect: { path: 'login' } // default page
       },
     ]
   }
