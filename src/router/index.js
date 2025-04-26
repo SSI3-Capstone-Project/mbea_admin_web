@@ -70,14 +70,14 @@ const routes = [
         meta: { title: 'Reports' }
       },
       {
-        path: '/exchange-reports/:id',
+        path: 'exchange-reports/:id',
         name: 'ReportDetail',
         component: ReportDetail,
         meta: { title: 'Report Detail' }
       },
       {
         path: '',
-        redirect: '/login' // default page
+        redirect: { path: '/login' } // default page
       },
     ]
   }
