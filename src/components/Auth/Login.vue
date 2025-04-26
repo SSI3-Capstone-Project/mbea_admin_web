@@ -13,7 +13,7 @@ const { login, isLoading, error } = useAuth()
 const handleSubmit = async () => {
   const success = await login({ email: email.value, password: password.value })
   if (success) {
-    router.push('/reports') // เปลี่ยนไปหน้า dashboard หรือหน้าแรก
+    router.push('reports') // เปลี่ยนไปหน้า dashboard หรือหน้าแรก
   }
 }
 </script>
