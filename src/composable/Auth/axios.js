@@ -32,8 +32,10 @@ instance.interceptors.response.use(
         error.config.headers.Authorization = `Bearer ${auth.accessToken}`
         return instance(error.config)
       } else {
-        auth.clearToken()
-        window.location.href = '/login'
+        if (window.location.pathname !== '/login') {
+          auth.clearToken()
+          window.location.href = '/login'
+        }
       }
     }
 

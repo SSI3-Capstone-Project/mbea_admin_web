@@ -30,7 +30,8 @@ export function useAuth() {
       setRefreshTokenCookie(refresh_token)
       return true
     } catch (err) {
-      error.value = err.response?.data?.message || 'Login failed'
+      error.value = err.response?.data?.error?.message || 'Login failed'
+      console.log(error.value);   
       return false
     } finally {
       isLoading.value = false
