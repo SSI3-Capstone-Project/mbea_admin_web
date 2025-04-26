@@ -6,7 +6,7 @@ RUN npm run build -- --base=/ssi3/
 
 FROM nginx:alpine
 COPY ./default.conf /etc/nginx/conf.d/default.conf
-COPY --from=stage1 /nodeproj/dist/ /usr/share/nginx/html/
+COPY --from=stage1 /nodeproj/dist/ /usr/share/nginx/html/ssi3/
 
 # Expose the port 3000
 EXPOSE 3000
