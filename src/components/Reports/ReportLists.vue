@@ -1,11 +1,13 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { getExchangeReports } from '../../composable/Reports/GetReports'
 
 const reports = ref([])
 const error = ref(null)
 const selectedStatus = ref('all')
 const showDropdown = ref(false)
+const dropdownRef = ref(null) // 🔵 เพิ่ม ref สำหรับ dropdown
+const buttonRef = ref(null)    // 🔵 เพิ่ม ref สำหรับปุ่ม
 
 onMounted(async () => {
   const res = await getExchangeReports()
@@ -14,7 +16,26 @@ onMounted(async () => {
   } else {
     error.value = res.message
   }
+
+  // ➡️ Setup listener เวลากดที่ไหนก็ได้
+  window.addEventListener('click', handleClickOutside)
 })
+
+onBeforeUnmount(() => {
+  window.removeEventListener('click', handleClickOutside)
+})
+
+const handleClickOutside = (event) => {
+  // ถ้าไม่ได้คลิกที่ dropdown หรือปุ่ม => ปิด dropdown
+  if (
+    dropdownRef.value &&
+    !dropdownRef.value.contains(event.target) &&
+    buttonRef.value &&
+    !buttonRef.value.contains(event.target)
+  ) {
+    showDropdown.value = false
+  }
+}
 
 const filteredReports = computed(() => {
   if (selectedStatus.value === 'all') return reports.value
@@ -27,9 +48,12 @@ const filteredReports = computed(() => {
     <p v-if="error" class="text-red-500">{{ error }}</p>
 
     <div class="relative inline-block text-left mb-5">
-      <button @click="showDropdown = !showDropdown"
+      <button 
+        ref="buttonRef" 
+        @click="showDropdown = !showDropdown"
         class="text-gray-700 bg-gray-50 shadow-md hover:bg-gray-100 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 inline-flex items-center"
-        type="button">
+        type="button"
+      >
         Filter Status
         <svg class="w-2.5 h-2.5 ms-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
           <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -37,7 +61,11 @@ const filteredReports = computed(() => {
         </svg>
       </button>
 
-      <div v-if="showDropdown" class="absolute z-10 mt-2 w-48 bg-white rounded-lg shadow">
+      <div 
+        v-if="showDropdown" 
+        ref="dropdownRef" 
+        class="absolute z-10 mt-2 w-48 bg-white rounded-lg shadow"
+      >
         <ul class="p-3 space-y-1 text-sm text-gray-700">
           <li v-for="(label, value) in { all: 'ALL', pending: 'Pending', resolved: 'Resolved' }" :key="value">
             <div class="flex items-center p-2 rounded hover:bg-gray-100">
@@ -58,6 +86,7 @@ const filteredReports = computed(() => {
       </div>
     </div>
 
+    <!-- ตารางแสดงผล -->
     <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
       <table class="w-full text-sm text-left text-gray-500">
         <thead class="text-xs text-gray-700 uppercase bg-gray-50">
@@ -106,9 +135,3 @@ const filteredReports = computed(() => {
     </div>
   </div>
 </template>
-
-<style scoped>
-th{
-  background-color: var(--color-primary);
-}
-</style>
