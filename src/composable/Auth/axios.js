@@ -33,8 +33,8 @@ instance.interceptors.response.use(
         return instance(error.config)
       } else {
         if (window.location.pathname !== '/ssi3/login') {
-          auth.clearToken()
-          window.location.href = '/ssi3/login'
+          // auth.clearToken()
+          // window.location.href = '/ssi3/login'
         }
       }
     }
