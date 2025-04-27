@@ -4,7 +4,7 @@ import { refreshAccessToken } from './tokenService'
 
 const instance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || '', // แนะนำใช้ env
-  withCredentials: true // ปรับเป็น true ถ้าใช้ HttpOnly cookie
+  withCredentials: false // ปรับเป็น true ถ้าใช้ HttpOnly cookie
 })
 
 // ➕ แนบ access token ทุก request
@@ -33,8 +33,8 @@ instance.interceptors.response.use(
         return instance(error.config)
       } else {
         if (window.location.pathname !== '/ssi3/login') {
-          // auth.clearToken()
-          // window.location.href = '/ssi3/login'
+          auth.clearToken()
+          window.location.href = '/ssi3/login'
         }
       }
     }

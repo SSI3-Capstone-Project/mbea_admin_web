@@ -2,15 +2,23 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
 export const useAuthStore = defineStore('auth', () => {
-  const accessToken = ref(null)
+  const accessToken = ref(localStorage.getItem('accessToken') || null)
+  const refreshToken = ref(localStorage.getItem('refreshToken') || null)
 
-  function setToken(token) {
-    accessToken.value = token
+  function setToken(access, refresh = null) {
+    accessToken.value = access
+    localStorage.setItem('accessToken', access)
+    if (refresh !== null) {
+      refreshToken.value = refresh
+      localStorage.setItem('refreshToken', refresh)
+    }
   }
 
   function clearToken() {
     accessToken.value = null
-    document.cookie = 'refresh_token=; Max-Age=0' // ลบ refresh token ด้วย
+    refreshToken.value = null
+    localStorage.removeItem('accessToken')
+    localStorage.removeItem('refreshToken')
   }
 
   function getAuthHeader() {
@@ -22,13 +30,13 @@ export const useAuthStore = defineStore('auth', () => {
   function isLoggedIn() {
     return !!accessToken.value
   }
-  
+
   return {
     accessToken,
+    refreshToken,
     setToken,
     clearToken,
     getAuthHeader,
     isLoggedIn
   }
-  
 })

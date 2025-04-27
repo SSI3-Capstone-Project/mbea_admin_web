@@ -2,23 +2,10 @@ import axios from './axios'
 import { ref } from 'vue'
 import { useAuthStore } from './useAuthStore'
 
-function getRefreshTokenFromCookie() {
-  const match = document.cookie.match(/(^|;) ?refresh_token=([^;]*)(;|$)/)
-  return match ? decodeURIComponent(match[2]) : null
-}
-
 export function useAuth() {
   const isLoading = ref(false)
   const error = ref(null)
   const auth = useAuthStore()
-  const isProd = import.meta.env.PROD
-
-  // ✅ ฟังก์ชันช่วยเซต cookie
-  function setRefreshTokenCookie(token) {
-    document.cookie =
-      `refresh_token=${encodeURIComponent(token)}; path=/; max-age=${60 * 60 * 24 * 7}` +
-      (isProd ? '; Secure; SameSite=Strict' : '')
-  }
 
   const login = async ({ email, password }) => {
     isLoading.value = true
@@ -26,12 +13,11 @@ export function useAuth() {
     try {
       const res = await axios.post('/api/operator/login', { email, password })
       const { access_token, refresh_token } = res.data.data
-      auth.setToken(access_token)
-      setRefreshTokenCookie(refresh_token)
+      auth.setToken(access_token, refresh_token) // ✅ เก็บ access + refresh
       return true
     } catch (err) {
       error.value = err.response?.data?.error?.message || 'Login failed'
-      console.log(error.value);   
+      console.log(error.value);
       return false
     } finally {
       isLoading.value = false
@@ -39,7 +25,7 @@ export function useAuth() {
   }
 
   const refreshAccessToken = async () => {
-    const refreshToken = getRefreshTokenFromCookie()
+    const refreshToken = auth.refreshToken
     if (!refreshToken) {
       auth.clearToken()
       return false
@@ -47,11 +33,10 @@ export function useAuth() {
 
     try {
       const res = await axios.post('/api/operator/refresh-token', {
-        refresh_token: refreshToken
+        refresh_token: refreshToken,
       })
       const { access_token, refresh_token: newRefresh } = res.data.data
-      auth.setToken(access_token)
-      setRefreshTokenCookie(newRefresh)
+      auth.setToken(access_token, newRefresh) // ✅ เซตใหม่ทั้งคู่
       return true
     } catch (e) {
       auth.clearToken()
