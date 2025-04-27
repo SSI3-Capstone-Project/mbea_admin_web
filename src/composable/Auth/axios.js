@@ -4,7 +4,7 @@ import { refreshAccessToken } from './tokenService'
 
 const instance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || '', // แนะนำใช้ env
-  withCredentials: false // ปรับเป็น true ถ้าใช้ HttpOnly cookie
+  withCredentials: true // ปรับเป็น true ถ้าใช้ HttpOnly cookie
 })
 
 // ➕ แนบ access token ทุก request
