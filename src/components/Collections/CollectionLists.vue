@@ -15,6 +15,13 @@
                         {{ col.brand_name }}
                     </option>
                 </select>
+
+                <select v-model="filterStatus" @change="fetchCollections"
+                    class="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                    <option value="">All Status</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                </select>
             </div>
             <button to="/collections/form" class="add-button items-center shadow-md" @click="addCollection">Add
                 Collection</button>
@@ -25,6 +32,7 @@
                     <th>No.</th>
                     <th>Collection Name</th>
                     <th>Brand Name</th>
+                    <th>Status</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -36,6 +44,9 @@
                     </td>
                     <td>
                         <div class="ellipsis-2-lines">{{ collection.brand_name }}</div>
+                    </td>
+                    <td>
+                        <div class="ellipsis-2-lines">{{ collection.status }}</div>
                     </td>
                     <td>
                         <button class="shadow-md" @click="editCollection(collection)">edit</button>
@@ -60,6 +71,7 @@ export default {
         const filterCollectionName = ref("");
         const filterBrandName = ref("");
         const brandNameList = ref([]);
+        const filterStatus = ref("");
 
         const fetchCollections = async () => {
             const params = {};
@@ -68,6 +80,9 @@ export default {
             }
             if (filterBrandName.value) {
                 params.brand_name = filterBrandName.value;
+            }
+            if (filterStatus.value) {
+                params.status = filterStatus.value;
             }
 
             const response = await getAllCollections(params);
@@ -98,7 +113,7 @@ export default {
 
         const debouncedFetch = debounce(fetchCollections, 400);
 
-        watch([filterCollectionName, filterBrandName], debouncedFetch);
+        watch([filterCollectionName, filterBrandName, filterStatus], debouncedFetch);
 
         onMounted(async () => {
             await fetchCollections();
@@ -106,7 +121,7 @@ export default {
         });
 
 
-        return { collections, editCollection, addCollection, brandNameList, filterBrandName, filterCollectionName, fetchCollections };
+        return { collections, editCollection, addCollection, brandNameList, filterBrandName, filterCollectionName, fetchCollections, filterStatus };
     }
 };
 </script>
