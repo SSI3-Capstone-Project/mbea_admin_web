@@ -1,9 +1,17 @@
 <template>
     <div class="">
         <div class="flex justify-between items-center mb-6 w-full">
-            <!-- Filter Input -->
-            <input type="text" v-model="filterBrandName" @input="fetchBrands" placeholder="Search brand name"
-                class="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" />
+            <div class="flex gap-4 items-center">
+                <!-- Filter Input -->
+                <input type="text" v-model="filterBrandName" @input="fetchBrands" placeholder="Search brand name"
+                    class="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" />
+                <select v-model="filterStatus" @change="fetchBrands"
+                    class="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                    <option value="">All Status</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                </select>
+            </div>
             <button class="add-button items-center shadow-md" @click="addBrand">
                 Add Brand
             </button>
@@ -13,6 +21,7 @@
                 <tr>
                     <th>No.</th>
                     <th>Brand Name</th>
+                    <th>Status</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -20,6 +29,7 @@
                 <tr v-for="(brand, index) in brands" :key="brand.id">
                     <td>{{ index + 1 }}</td>
                     <td>{{ brand.brand_name }}</td>
+                    <td>{{ brand.status }}</td>
                     <td>
                         <button class="shadow-md" @click="editBrand(brand)">edit</button>
                     </td>
@@ -40,11 +50,15 @@ export default {
         const brands = ref([]);
         const router = useRouter();
         const filterBrandName = ref("");
+        const filterStatus = ref("");
 
         const fetchBrands = async () => {
             const params = {};
             if (filterBrandName.value.trim()) {
                 params.brand_name = filterBrandName.value.trim();
+            }
+            if (filterStatus.value) {
+                params.status = filterStatus.value;
             }
 
             const response = await getAllBrands(params);
@@ -71,7 +85,7 @@ export default {
 
         onMounted(fetchBrands);
 
-        return { brands, editBrand, addBrand, filterBrandName, fetchBrands };
+        return { brands, editBrand, addBrand, filterBrandName, fetchBrands, filterStatus, };
     }
 };
 </script>
@@ -145,7 +159,8 @@ button {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: nowrap; /* 💡 ห้ามขึ้นบรรทัดใหม่ */
+    flex-wrap: nowrap;
+    /* 💡 ห้ามขึ้นบรรทัดใหม่ */
     gap: 12px;
 }
 
