@@ -10,6 +10,19 @@
                     class="w-xl border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" />
             </div>
 
+            <!-- Status Select Field -->
+            <div class="mb-4">
+                <label for="status" class="block font-medium mb-2">
+                    Status <span class="text-red-500">*</span>
+                </label>
+                <select id="status" v-model="status"
+                    class="w-xl border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                    <option disabled value="" class="text-gray-400">-- Please select status --</option>
+                    <option value="active">active</option>
+                    <option value="inactive">inactive</option>
+                </select>
+            </div>
+
             <!-- Save / Cancel Buttons -->
             <div class="flex justify-end gap-4 mt-10">
                 <button @click="cancel" class="cancel-button px-4 py-2 shadow-md font-bold rounded-md transition"
@@ -38,6 +51,8 @@ const route = useRoute();
 const brandName = ref('')
 const originalBrandName = ref('')
 const id = ref(null);
+const status = ref('active'); // default active
+const originalStatus = ref('active');
 
 onMounted(async () => {
     if (route.params.id) {
@@ -47,11 +62,13 @@ onMounted(async () => {
 });
 
 const isDirty = computed(() => {
-    return brandName.value.trim() !== originalBrandName.value.trim()
+    return brandName.value.trim() !== originalBrandName.value.trim() || status.value !== originalStatus.value
+
 })
 
 const schema = yup.object({
-    brand_name: yup.string().trim().required('Brand name is required').max(50)
+    brand_name: yup.string().trim().required('Brand name is required').max(50),
+    status: yup.string().oneOf(['active', 'inactive'], 'Invalid status').required('Please select status')
 })
 
 const create = async (payload) => {
@@ -67,11 +84,11 @@ const update = async (id, payload) => {
 const submit = async () => {
     try {
         // ✅ Validate input ก่อนส่ง
-        await schema.validate({ brand_name: brandName.value }, { abortEarly: false })
+        await schema.validate({ brand_name: brandName.value, status: status.value }, { abortEarly: false })
 
         const payload = {
             brand_name: brandName.value.trim(),
-            status: 'active'
+            status: status.value
         }
 
         const result = id.value
@@ -122,6 +139,8 @@ const getById = async () => {
         if (res.success) {
             brandName.value = res.data.brand_name
             originalBrandName.value = res.data.brand_name
+            status.value = res.data.status || 'active'
+            originalStatus.value = res.data.status || 'active'
         } else {
             Swal.fire({
                 icon: 'error',
@@ -173,6 +192,7 @@ button.cancel-button:hover {
 }
 
 @media (max-width: 640px) {
+
     /* Input ปรับเต็มจอ */
     input[type="text"] {
         width: 100% !important;
@@ -185,5 +205,4 @@ button.cancel-button:hover {
         font-size: 14px;
     }
 }
-
 </style>
