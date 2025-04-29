@@ -1,7 +1,7 @@
 <template>
     <div>
         <!-- ✅ Wrap ด้วย form -->
-        <form  @submit.prevent="submit">
+        <form @submit.prevent="submit">
             <!-- Subcollection Name Field -->
             <!-- Subcollection Name Field -->
             <div class="mb-4">
@@ -24,6 +24,19 @@
                     <option v-for="collection in collectionList" :key="collection.id" :value="collection.id">
                         {{ collection.collection_name }}
                     </option>
+                </select>
+            </div>
+
+            <!-- Status Select Field -->
+            <div class="mb-4">
+                <label for="status" class="block font-medium mb-2">
+                    Status <span class="text-red-500">*</span>
+                </label>
+                <select id="status" v-model="status"
+                    class="w-xl border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                    <option disabled value="" class="text-gray-400">-- Please select status --</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
                 </select>
             </div>
 
@@ -58,6 +71,8 @@ const selectedCollectionId = ref('')
 const originalCollectionId = ref('')
 const originalSubCollectionName = ref('')
 const id = ref(null);
+const status = ref('active'); // default active
+const originalStatus = ref('active');
 
 onMounted(async () => {
     await fetchCollections();
@@ -69,12 +84,17 @@ onMounted(async () => {
 
 const schema = yup.object({
     sub_collection_name: yup.string().trim().required('Subcollection name is required').max(50),
-    collection_id: yup.string().required('Please select a collection')
+    collection_id: yup.string().required('Please select a collection'),
+    status: yup.string().oneOf(['active', 'inactive'], 'Invalid status').required('Please select status')
 })
 
 const isDirty = computed(() => {
-    return subCollectionName.value.trim() !== originalSubCollectionName.value.trim() || selectedCollectionId.value !== originalCollectionId.value
-})
+    return (
+        subCollectionName.value.trim() !== originalSubCollectionName.value.trim() ||
+        selectedCollectionId.value !== originalCollectionId.value ||
+        status.value !== originalStatus.value
+    );
+});
 
 const create = async (payload) => {
     const result = await createSubCollection(payload)
@@ -89,12 +109,16 @@ const update = async (id, payload) => {
 const submit = async () => {
     try {
         // ✅ Validate input ก่อนส่ง
-        await schema.validate({ sub_collection_name: subCollectionName.value, collection_id: selectedCollectionId.value }, { abortEarly: false })
+        await schema.validate({
+            sub_collection_name: subCollectionName.value,
+            collection_id: selectedCollectionId.value,
+            status: status.value
+        }, { abortEarly: false })
 
         const payload = {
             sub_collection_name: subCollectionName.value.trim(),
             collection_id: selectedCollectionId.value,
-            status: 'active'
+            status: status.value
         }
 
         const result = id.value
@@ -154,8 +178,10 @@ const getById = async () => {
         if (res.success) {
             subCollectionName.value = res.data.sub_collection_name
             selectedCollectionId.value = res.data.collection_id
+            status.value = res.data.status || 'active' // กรณีไม่มี status เผื่อไว้
             originalSubCollectionName.value = res.data.sub_collection_name
             originalCollectionId.value = res.data.collection_id
+            originalStatus.value = res.data.status || 'active'
         } else {
             Swal.fire({
                 icon: 'error',
@@ -203,22 +229,22 @@ button.cancel-button:hover {
 
 @media (max-width: 640px) {
 
-/* Input ปรับเต็มจอ */
-input[type="text"] {
-    width: 100% !important;
-    font-size: 14px;
-    padding: 10px;
-}
+    /* Input ปรับเต็มจอ */
+    input[type="text"] {
+        width: 100% !important;
+        font-size: 14px;
+        padding: 10px;
+    }
 
-select {
-    width: 100%;
-    font-size: 14px;
-    padding: 10px;
-}
+    select {
+        width: 100%;
+        font-size: 14px;
+        padding: 10px;
+    }
 
-/* Label ขนาดเล็กลงนิดนึง */
-label {
-    font-size: 14px;
-}
+    /* Label ขนาดเล็กลงนิดนึง */
+    label {
+        font-size: 14px;
+    }
 }
 </style>
