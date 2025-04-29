@@ -25,6 +25,19 @@
                     </option>
                 </select>
             </div>
+            
+            <!-- Status Select Field -->
+            <div class="mb-4">
+                <label for="status" class="block font-medium mb-2">
+                    Status <span class="text-red-500">*</span>
+                </label>
+                <select id="status" v-model="status"
+                    class="w-xl border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                    <option disabled value="" class="text-gray-400">-- Please select status --</option>
+                    <option value="active">active</option>
+                    <option value="inactive">inactive</option>
+                </select>
+            </div>
 
             <!-- Save / Cancel Buttons -->
             <div class="flex justify-end gap-4 mt-10">
@@ -57,6 +70,8 @@ const selectedBrandId = ref('')
 const originalCollectionName = ref('')
 const originalBrandId = ref('')
 const id = ref(null);
+const status = ref('active'); // default active
+const originalStatus = ref('active');
 
 onMounted(async () => {
     await fetchBrands();
@@ -67,12 +82,13 @@ onMounted(async () => {
 });
 
 const isDirty = computed(() => {
-    return collectionName.value.trim() !== originalCollectionName.value.trim() || selectedBrandId.value !== originalBrandId.value
+    return collectionName.value.trim() !== originalCollectionName.value.trim() || selectedBrandId.value !== originalBrandId.value || status.value !== originalStatus.value
 })
 
 const schema = yup.object({
     collection_name: yup.string().trim().required('Collection name is required').max(50),
-    brand_id: yup.string().required('Please select a brand')
+    brand_id: yup.string().required('Please select a brand'),
+    status: yup.string().oneOf(['active', 'inactive'], 'Invalid status').required('Please select status')
 })
 
 const create = async (payload) => {
@@ -88,12 +104,12 @@ const update = async (id, payload) => {
 const submit = async () => {
     try {
         // ✅ Validate input ก่อนส่ง
-        await schema.validate({ collection_name: collectionName.value, brand_id: selectedBrandId.value }, { abortEarly: false })
+        await schema.validate({ collection_name: collectionName.value, brand_id: selectedBrandId.value, status: status.value}, { abortEarly: false })
 
         const payload = {
             collection_name: collectionName.value.trim(),
             brand_id: selectedBrandId.value,
-            status: 'active'
+            status: status.value
         }
 
         const result = id.value
@@ -153,8 +169,10 @@ const getById = async () => {
         if (res.success) {
             collectionName.value = res.data.collection_name
             selectedBrandId.value = res.data.brand_id
+            status.value = res.data.status || 'active' 
             originalCollectionName.value = res.data.collection_name
             originalBrandId.value = res.data.brand_id
+            originalStatus.value = res.data.status || 'active'
         } else {
             Swal.fire({
                 icon: 'error',

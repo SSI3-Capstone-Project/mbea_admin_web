@@ -35,8 +35,8 @@
                 <select id="status" v-model="status"
                     class="w-xl border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
                     <option disabled value="" class="text-gray-400">-- Please select status --</option>
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
+                    <option value="active">active</option>
+                    <option value="inactive">inactive</option>
                 </select>
             </div>
 
