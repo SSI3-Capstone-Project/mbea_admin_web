@@ -1,15 +1,17 @@
 <template>
     <div class="">
         <div class="flex justify-between items-center mb-6 w-full">
-            <!-- Filter Input -->
-            <input type="text" v-model="filterBrandName" @input="fetchBrands" placeholder="Search brand name"
-                class="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" />
-            <select v-model="filterStatus" @change="fetchBrands"
-                class="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
-                <option value="">All Status</option>
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-            </select>
+            <div class="flex gap-4 items-center">
+                <!-- Filter Input -->
+                <input type="text" v-model="filterBrandName" @input="fetchBrands" placeholder="Search brand name"
+                    class="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" />
+                <select v-model="filterStatus" @change="fetchBrands"
+                    class="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                    <option value="">All Status</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                </select>
+            </div>
             <button class="add-button items-center shadow-md" @click="addBrand">
                 Add Brand
             </button>
