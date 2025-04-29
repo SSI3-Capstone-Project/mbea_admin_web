@@ -16,6 +16,13 @@
                         {{ col.collection_name }}
                     </option>
                 </select>
+
+                <select v-model="filterStatus" @change="fetchSubCollections"
+                    class="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                    <option value="">All Status</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                </select>
             </div>
 
             <!-- Add Button -->
@@ -23,12 +30,13 @@
                 Add Subcollection
             </button>
         </div>
-        <table class="subCollection-table ">
+        <table class="subCollection-table">
             <thead>
                 <tr>
                     <th>No.</th>
                     <th>Subcollection Name</th>
                     <th>Collection Name</th>
+                    <th>Status</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -36,13 +44,22 @@
                 <tr v-for="(subCollection, index) in subCollections" :key="subCollection.id">
                     <td>{{ index + 1 }}</td>
                     <td>
-                        <div class="ellipsis-2-lines">{{ subCollection.sub_collection_name }}</div>
+                        <div class="ellipsis-2-lines">
+                            {{ subCollection.sub_collection_name }}
+                        </div>
                     </td>
                     <td>
-                        <div class="ellipsis-2-lines">{{ subCollection.collection_name }}</div>
+                        <div class="ellipsis-2-lines">
+                            {{ subCollection.collection_name }}
+                        </div>
                     </td>
                     <td>
-                        <button class="shadow-md" @click="editSubCollection(subCollection)">edit</button>
+                        <div class="ellipsis-2-lines">{{ subCollection.status }}</div>
+                    </td>
+                    <td>
+                        <button class="shadow-md" @click="editSubCollection(subCollection)">
+                            edit
+                        </button>
                     </td>
                 </tr>
             </tbody>
@@ -64,6 +81,7 @@ export default {
         const collectionList = ref([]);
         const filterSubName = ref("");
         const filterCollectionName = ref("");
+        const filterStatus = ref("");
 
         const fetchSubCollections = async () => {
             const params = {};
@@ -73,7 +91,9 @@ export default {
             if (filterCollectionName.value) {
                 params.collection_name = filterCollectionName.value;
             }
-
+            if (filterStatus.value) {
+                params.status = filterStatus.value;
+            }
             const response = await getAllSubCollections(params);
             if (response.success) {
                 subCollections.value = response.data;
@@ -87,7 +107,7 @@ export default {
             if (res.success) {
                 collectionList.value = res.data;
             }
-        }
+        };
 
         const editSubCollection = (subCollection) => {
             console.log("Editing subCollection:", subCollection.id);
@@ -102,15 +122,24 @@ export default {
 
         const debouncedFetch = debounce(fetchSubCollections, 400);
 
-        watch([filterSubName, filterCollectionName], debouncedFetch);
+        watch([filterSubName, filterCollectionName, filterStatus], debouncedFetch);
 
         onMounted(async () => {
             await fetchCollections();
             await fetchSubCollections();
         });
 
-        return { subCollections, editSubCollection, addSubCollection, collectionList, filterCollectionName, filterSubName, fetchSubCollections };
-    }
+        return {
+            subCollections,
+            editSubCollection,
+            addSubCollection,
+            collectionList,
+            filterCollectionName,
+            filterSubName,
+            filterStatus, 
+            fetchSubCollections,
+        };
+    },
 };
 </script>
 
